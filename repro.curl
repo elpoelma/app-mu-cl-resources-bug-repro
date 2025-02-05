@@ -1,0 +1,86 @@
+# add the first AP
+curl 'http://muclr-repro.localhost/agendapunten' --compressed -X POST 
+-H 'Accept: application/vnd.api+json' 
+-H 'content-type: application/vnd.api+json' 
+-d 
+{
+  "data": {
+    "attributes": {
+      "titel": "1",
+    },
+    "type": "agendapunten"
+  }
+}
+
+
+# add the second, linking it to the first
+curl 'http://muclr-repro.localhost/agendapunten' --compressed -X POST 
+-H 'Accept: application/vnd.api+json' 
+-H 'content-type: application/vnd.api+json' 
+-d 
+{
+  "data": {
+    "attributes": {
+      "titel": "2",
+    },
+    "relationships": {
+      "vorige-agendapunt": {
+        "data": {
+          "type": "agendapunten",
+          "id": "67617AE485A5C561DF85E0B0"
+        }
+      },
+    },
+    "type": "agendapunten"
+  }
+}
+
+
+
+# remove the first
+curl 'http://muclr-repro.localhost/agendapunten/67617AE485A5C561DF85E0B0' -X DELETE
+-H 'Accept: application/vnd.api+json' 
+-H 'content-type: application/vnd.api+json' 
+
+
+# patch the second to remove the link (this is what ember-data does automatically)
+curl 'http://muclr-repro.localhost/agendapunten/67617AF085A5C561DF85E0B1' -X PATCH 
+-H 'Accept: application/vnd.api+json' 
+-H 'content-type: application/vnd.api+json' 
+-d 
+{
+  "data": {
+    "id": "67617AF085A5C561DF85E0B1",
+    "attributes": {
+      "titel": "2"
+    },
+    "relationships": {
+      "vorige-agendapunt": {
+        "data": null
+      }
+    },
+    "type": "agendapunten"
+  }
+}
+# observe that the second still has a link to the first
+curl 'http://muclr-repro.localhost/agendapunten/67617AF085A5C561DF85E0B1' -X PATCH 
+-H 'Accept: application/vnd.api+json' 
+-H 'content-type: application/vnd.api+json' 
+-d 
+{
+  "data": {
+    "id": "67617AF085A5C561DF85E0B1",
+    "attributes": {
+      "titel": "2"
+    },
+    "relationships": {
+      "vorige-agendapunt": {
+        "data": {
+	  "type": "agendapunten",
+	  "id": "67617E7685A5C561DF85E0B2"
+	  }
+      }
+    },
+    "type": "agendapunten"
+  }
+}
