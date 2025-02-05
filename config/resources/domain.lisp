@@ -7,7 +7,8 @@
 
 (define-resource agendaitem ()
   :class (s-prefix "ext:Agendapunt")
-  :properties `((:title :string ,(s-prefix "dct:title")))
+  :properties `((:title :string ,(s-prefix "dct:title"))
+                (:position :number ,(s-prefix "ext:position")))
                 
                 
   :has-one `((agendaitem :via ,(s-prefix "ext:aangebrachtNa")
